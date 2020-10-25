@@ -1,8 +1,6 @@
-import React from "react";
-import { Admin, Resource } from "react-admin";
-
-import logo from "./logo.svg";
-import "./App.css";
+import React from 'react'
+import logo from './logo.svg';
+import './App.css';
 
 function App() {
   return (

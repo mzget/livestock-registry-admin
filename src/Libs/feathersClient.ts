@@ -20,3 +20,4 @@ app.configure(
 const users = app.service('users');
 
 export default app;
+export { users };

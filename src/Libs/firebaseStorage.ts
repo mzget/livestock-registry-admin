@@ -3,7 +3,7 @@ import firebase from 'firebase/app';
 // Set the configuration for your app
 // TODO: Replace with your app's config object
 const firebaseConfig = {
-    apiKey: 'AIzaSyBDxMJiqMzHeIV1pluT6NSrD5UQoW9ZNZo',
+    apiKey: '',
     authDomain: 'livestock-8a913.firebaseapp.com',
     databaseURL: 'https://livestock-8a913.firebaseio.com',
     projectId: 'livestock-8a913',

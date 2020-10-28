@@ -1,9 +1,10 @@
-import { Admin, Resource, ListGuesser } from 'react-admin';
+import { Admin, Resource } from 'react-admin';
 import { restClient, authClient } from 'ra-data-feathers';
 
 import feathersClient from 'libs/feathersClient';
 
-import UsersList from 'resources/UsersList';
+import UsersList from 'resources/users/UsersList';
+import UserEdit from 'resources/users/UserEdit';
 
 import './App.css';
 
@@ -26,7 +27,7 @@ const App = () => (
         dataProvider={restClient(feathersClient, restClientOptions)}
         authProvider={authClient(feathersClient, authClientOptions)}
     >
-        <Resource name="users" list={UsersList} />
+        <Resource name="users" list={UsersList} edit={UserEdit} />
     </Admin>
 );
 

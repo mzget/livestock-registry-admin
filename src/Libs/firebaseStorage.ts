@@ -1,6 +1,6 @@
 import firebase from 'firebase/app';
 import 'firebase/storage';
-import config from '../config/dev';
+import config from 'config/dev';
 
 // Set the configuration for your app
 // TODO: Replace with your app's config object

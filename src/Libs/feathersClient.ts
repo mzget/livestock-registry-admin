@@ -1,11 +1,12 @@
-import feathers from '@feathersjs/client';
+import feathers from '@feathersjs/feathers';
+import rest from '@feathersjs/rest-client';
+import auth from '@feathersjs/authentication-client';
 import { restClient, authClient } from 'ra-data-feathers';
 
-//@ts-ignore
 const app = feathers();
 
 // Connect to a different URL
-const client = feathers.rest('http://localhost:3030');
+const client = rest('http://localhost:3030');
 
 // app.configure(feathers.hooks())
 
@@ -14,7 +15,7 @@ app.configure(client.fetch(window.fetch));
 
 // Use localStorage to store our login token
 app.configure(
-    feathers.authentication({
+    auth({
         storage: window.localStorage,
         jwtStrategy: 'jwt',
     })

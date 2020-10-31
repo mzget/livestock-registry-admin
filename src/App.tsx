@@ -1,7 +1,5 @@
 import { Admin, Resource } from 'react-admin';
-import { restClient, authClient } from 'ra-data-feathers';
-
-import feathersClient from 'libs/feathersClient';
+import feathersClient, { restClient, authClient } from 'libs/feathersClient';
 
 import UsersList from 'resources/users/UsersList';
 import UserEdit from 'resources/users/UserEdit';

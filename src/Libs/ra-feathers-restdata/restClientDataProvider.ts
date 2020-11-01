@@ -3,10 +3,16 @@ import {
     GetListParams,
     GetListResult,
     GetManyParams,
+    GetManyReferenceParams,
+    GetManyReferenceResult,
     GetManyResult,
     GetOneParams,
     GetOneResult,
 } from 'react-admin';
+
+import { getListRequest } from './mapResquest';
+import { mapGetResponse } from './mapResponse';
+import { defaultIdKey, dbg, queryOperators } from './helper';
 
 type ClientOptions = {
     id?: string; // If your database uses an id field other than 'id'. Optional.
@@ -21,35 +27,6 @@ type ClientOptions = {
     customQueryOperators?: Array<any>;
 };
 
-const debug = console.info;
-const dbg = (...msgs) => debug('ra-data-feathers:rest-client', ...msgs);
-const queryOperators = [
-    '$gt',
-    '$gte',
-    '$lt',
-    '$lte',
-    '$ne',
-    '$sort',
-    '$or',
-    '$nin',
-    '$in',
-];
-const defaultIdKey = 'id';
-function flatten(object, prefix = '', stopKeys: Array<any> = []) {
-    return Object.keys(object).reduce((prev, element) => {
-        const hasNextLevel =
-            object[element] &&
-            typeof object[element] === 'object' &&
-            !Array.isArray(object[element]) &&
-            !Object.keys(object[element]).some((key) => stopKeys.includes(key));
-        return hasNextLevel
-            ? {
-                  ...prev,
-                  ...flatten(object[element], `${prefix}${element}.`, stopKeys),
-              }
-            : { ...prev, ...{ [`${prefix}${element}`]: object[element] } };
-    }, {});
-}
 function getIdKey({
     resource,
     options,
@@ -78,28 +55,6 @@ function initFunction({ client, options, resource, params }) {
 }
 
 /**
- * Map Response
- */
-function mapGetResponse(response, idKey) {
-    let res;
-    // support paginated and non paginated services
-    if (!response.data) {
-        response.total = response.length;
-        res = response;
-    } else {
-        res = response.data;
-    }
-    response.data = res.map((_item) => {
-        const item = _item;
-        if (idKey !== defaultIdKey) {
-            item.id = _item[idKey];
-        }
-        return _item;
-    });
-    return { ...response, validUntil: undefined };
-}
-
-/**
  * DataProvider Interface
  */
 
@@ -107,37 +62,14 @@ const getList = (client: Application, options: ClientOptions) => (
     resource: string,
     params: GetListParams
 ): Promise<GetListResult<any>> => {
-    const { query, service, idKey } = initFunction({
+    const init = initFunction({
         client,
         options,
         resource,
         params,
     });
 
-    const { page, perPage } = params.pagination || {};
-    const { field, order } = params.sort || {};
-    const additionalQueryOperators = options.customQueryOperators ?? [];
-    const allUniqueQueryOperators = [
-        ...new Set(queryOperators.concat(additionalQueryOperators)),
-    ];
-    dbg('field=%o, order=%o', field, order);
-    if (perPage && page) {
-        query.$limit = perPage;
-        query.$skip = perPage * (page - 1);
-    }
-    if (order) {
-        query.$sort = {
-            [field === defaultIdKey ? idKey : field]: order === 'DESC' ? -1 : 1,
-        };
-    }
-    Object.assign(
-        query,
-        params.filter ? flatten(params.filter, '', allUniqueQueryOperators) : {}
-    );
-    dbg('query=%o', query);
-    return service
-        .find({ query })
-        .then((response) => mapGetResponse(response, idKey));
+    return getListRequest({ options, params }, init);
 };
 const getOne = (client: Application, options: ClientOptions) => (
     resource: string,
@@ -170,6 +102,22 @@ const getMany = (client: Application, options: ClientOptions) => (
         .find({ query })
         .then((response) => mapGetResponse(response, idKey));
 };
+const getManyReference = (client: Application, options: ClientOptions) => (
+    resource: string,
+    params: GetManyReferenceParams
+): Promise<GetManyReferenceResult<any>> => {
+    const { query, service, idKey } = initFunction({
+        client,
+        options,
+        resource,
+        params,
+    });
+
+    if (params.target && params.id) {
+        query[params.target] = params.id;
+    }
+    return getListRequest({ options, params }, { query, service, idKey });
+};
 
 /**
  * React-Admin version 3 new dataProvider interface
@@ -181,8 +129,7 @@ function restClient(client: Application, options: ClientOptions = {}) {
         getList: getList(client, options),
         getOne: getOne(client, options),
         getMany: getMany(client, options),
-        getManyReference: (resource, params): Promise<any> =>
-            Promise.resolve({ data: [{}], total: 0 }),
+        getManyReference: getManyReference(client, options),
         create: (resource, params): Promise<any> =>
             Promise.resolve({ data: {} }),
         update: (resource, params): Promise<any> =>

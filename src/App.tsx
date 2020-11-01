@@ -3,7 +3,7 @@ import feathersClient, {
     restClient as lagacyClient,
     authClient,
 } from 'libs/feathersClient';
-import restClient from 'libs/restClientDataProvider';
+import restClient from 'libs/ra-feathers-restdata/restClientDataProvider';
 
 import UsersList from 'resources/users/UsersList';
 import UserEdit from 'resources/users/UserEdit';

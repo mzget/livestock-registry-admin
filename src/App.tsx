@@ -1,9 +1,5 @@
 import { Admin, Resource } from 'react-admin';
-import feathersClient, {
-    restClient as lagacyClient,
-    authClient,
-} from 'libs/feathersClient';
-import restClient from 'react-admin-v3-data-feathersjs';
+import feathersClient, { restClient, authClient } from 'libs/feathersClient';
 
 import UsersList from 'resources/users/UsersList';
 import UserEdit from 'resources/users/UserEdit';
@@ -24,9 +20,22 @@ const authClientOptions = {
     usernameField: 'email', // The key used to provide the username to Feathers client.authenticate
 };
 
+const dataProvider = restClient(feathersClient, restClientOptions);
+const overrideRestClient = {
+    ...dataProvider,
+    update: (resource, params) => {
+        console.log('test', resource, params);
+        if (resource !== 'posts' || !params.data.pictures) {
+            // fallback to the default implementation
+            return dataProvider.update(resource, params);
+        }
+        return dataProvider.update(resource, params);
+    },
+};
+
 const App = () => (
     <Admin
-        dataProvider={restClient(feathersClient, restClientOptions)}
+        dataProvider={overrideRestClient}
         authProvider={authClient(feathersClient, authClientOptions)}
     >
         <Resource name="users" list={UsersList} edit={UserEdit} />

@@ -1,7 +1,8 @@
 import feathers from '@feathersjs/feathers';
 import rest from '@feathersjs/rest-client';
 import auth from '@feathersjs/authentication-client';
-import { restClient, authClient } from 'ra-data-feathers';
+import { authClient } from 'ra-data-feathers';
+import restClient from 'react-admin-v3-data-feathersjs';
 
 const app = feathers();
 

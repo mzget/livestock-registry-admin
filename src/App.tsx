@@ -3,7 +3,7 @@ import feathersClient, {
     restClient as lagacyClient,
     authClient,
 } from 'libs/feathersClient';
-import restClient from 'libs/ra-feathers-restdata/restClientDataProvider';
+import restClient from 'react-admin-v3-data-feathersjs';
 
 import UsersList from 'resources/users/UsersList';
 import UserEdit from 'resources/users/UserEdit';

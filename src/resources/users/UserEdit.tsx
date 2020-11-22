@@ -19,7 +19,6 @@ export const UserEdit = (props) => {
 
     const onDrop = useCallback((acceptedFiles: File[]) => {
         // Do something with the files
-        console.log('acceptedFiles', acceptedFiles);
         if (acceptedFiles && acceptedFiles.length > 0) {
             firebaseUploadFile({
                 path: 'farm_logo',
@@ -43,7 +42,7 @@ export const UserEdit = (props) => {
                 <TextInput source="username" validate={required()} />
                 <TextInput source="farm_name" validate={required()} />
                 <ImageInput
-                    source="farm_logo"
+                    source="images"
                     accept="image/*"
                     options={{
                         onDrop: onDrop,
@@ -52,9 +51,14 @@ export const UserEdit = (props) => {
                         },
                     }}
                 >
-                    <ImageField source="src" title="title" />
+                    <ImageField source="src" title="title" src={farmLogo} />
                 </ImageInput>
-                <TextInput source="address" multiline validate={required()} />
+                <TextInput
+                    source="address"
+                    multiline
+                    validate={required()}
+                    fullWidth
+                />
             </SimpleForm>
         </Edit>
     );
